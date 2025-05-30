@@ -1,135 +1,118 @@
+
 <!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RB Taxi - Výpočet směny</title>
+  <title>RB Taxi – Výpočet směny</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-512x512.png" />
-  <meta name="theme-color" content="#007aff" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <meta name="theme-color" content="#FFCC00" />
   <style>
-    :root {
-      --bg: #f9f9f9;
-      --fg: #000;
-      --accent: #007aff;
-      --card: #ffffff;
-    }
-    [data-theme="dark"] {
-      --bg: #1e1e1e;
-      --fg: #fff;
-      --card: #2a2a2a;
-    }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--fg);
-      transition: background 0.3s, color 0.3s;
+      background-color: #ffffff;
+      color: #111;
     }
+
     header {
-      background: var(--card);
+      background: #FFCC00;
       padding: 1rem;
       display: flex;
       align-items: center;
       gap: 1rem;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
+
     header img {
       width: 50px;
       height: 50px;
     }
+
     .container {
       max-width: 600px;
       margin: 2rem auto;
-      background: var(--card);
+      background: #f9f9f9;
       padding: 1.5rem;
-      border-radius: 16px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
     }
+
     h2 {
-      text-align: center;
-      margin-bottom: 1rem;
+      color: #111;
+      margin-top: 1.5rem;
     }
-    section {
-      margin-bottom: 1.5rem;
-    }
+
     label {
       display: block;
-      margin-bottom: 0.25rem;
-      font-weight: 500;
+      margin-top: 0.5rem;
     }
+
     input, select {
       width: 100%;
       padding: 10px;
       font-size: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 10px;
+      margin-top: 0.2rem;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      background: var(--bg);
-      color: var(--fg);
+      margin-bottom: 1rem;
     }
+
     button {
       width: 100%;
-      padding: 12px;
+      padding: 15px;
       font-size: 1rem;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--accent), #005fcb);
+      background: #111;
       color: #fff;
+      border: none;
+      border-radius: 10px;
+      margin-top: 1rem;
       cursor: pointer;
     }
+
     .output {
-      font-size: 1.1rem;
-      margin-top: 1.5rem;
+      margin-top: 2rem;
+      font-size: 1rem;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
     }
-    .green { color: limegreen; }
+
+    .green { color: green; }
     .red { color: tomato; }
-    .theme-toggle {
-      margin-left: auto;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
   <header>
     <img src="logo.png" alt="RB Taxi" />
     <h1>RB Taxi – Výpočet směny</h1>
-    <i class="fas fa-adjust theme-toggle" title="Přepnout režim" onclick="toggleTheme()"></i>
   </header>
   <div class="container">
     <form id="driverForm">
-      <section>
-        <h2>Směna</h2>
-        <label>Typ směny:
-          <select id="shiftType">
-            <option value="den">Denní</option>
-            <option value="noc">Noční</option>
-            <option value="1/2">1/2 směna</option>
-          </select>
-        </label>
-        <label>Celkem km: <input type="number" id="km" required /></label>
-        <label>Celková tržba (Kč): <input type="number" id="trzba" required /></label>
-        <label>Přístavné (Kč): <input type="number" id="pristavne" required /></label>
-      </section>
-      <section>
-        <h2>Platby a náklady</h2>
-        <label>Palivo (Kč): <input type="number" id="palivo" required /></label>
-        <label>Mytí (Kč): <input type="number" id="myti" required /></label>
-        <label>Kartou (Kč): <input type="number" id="karta" required /></label>
-        <label>Fakturou (Kč): <input type="number" id="faktura" required /></label>
-        <label>Jiné platby (Kč): <input type="number" id="jine" required /></label>
-      </section>
+      <h2>Směna</h2>
+      <label>Typ směny:
+        <select id="shiftType">
+          <option value="den">Denní</option>
+          <option value="noc">Noční</option>
+          <option value="1/2">1/2 směna</option>
+        </select>
+      </label>
+      <label>Celkem km: <input type="number" id="km" required /></label>
+      <label>Celková tržba (Kč): <input type="number" id="trzba" required /></label>
+      <label>Přístavné (Kč): <input type="number" id="pristavne" required /></label>
+
+      <h2>Platby a náklady</h2>
+      <label>Palivo (Kč): <input type="number" id="palivo" required /></label>
+      <label>Mytí (Kč): <input type="number" id="myti" required /></label>
+      <label>Kartou (Kč): <input type="number" id="karta" required /></label>
+      <label>Fakturou (Kč): <input type="number" id="faktura" required /></label>
+      <label>Jiné platby (Kč): <input type="number" id="jine" required /></label>
+
       <button type="button" onclick="calculate()">💡 Spočítat</button>
     </form>
     <div class="output" id="output"></div>
   </div>
   <script>
-    function toggleTheme() {
-      const theme = document.documentElement.getAttribute("data-theme");
-      document.documentElement.setAttribute("data-theme", theme === "dark" ? "light" : "dark");
-    }
-
     function calculate() {
       const shift = document.getElementById('shiftType').value;
       const km = parseFloat(document.getElementById('km').value);
@@ -163,10 +146,6 @@
       }
 
       document.getElementById('output').innerHTML = result;
-    }
-
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.setAttribute("data-theme", "dark");
     }
   </script>
 </body>
