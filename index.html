@@ -73,16 +73,31 @@
     }
 
     .output {
+  opacity: 1 !important;
+
       opacity: 0;
       transform: translateY(10px);
       transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
     .output.visible {
+  opacity: 1;
+
       opacity: 1;
       transform: translateY(0);
     }
-    </style>
+    
+    .section {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid #f0f0f0;
+      transition: all 0.3s ease;
+    }
+    .section:hover {
+      background-color: #fffef5;
+    }
+
+</style>
 </head>
 <body>
   <header>
@@ -119,9 +134,9 @@
     </form>
 
     </div>
-<div class="output" id="output"></div>
+<div class="section output" id="output"></div>
 
-    <div class="history">
+    <div class="section history">
       <h2>📋 Historie směn</h2>
       <div id="historyTable"></div>
 <button type="button" onclick="clearMyHistory()">🗑️ Smazat moji historii</button>
