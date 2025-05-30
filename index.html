@@ -17,6 +17,12 @@
     input::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
+    
+      background: linear-gradient(to right, #ffcc00, #ffee55);
+      color: #000;
+      font-weight: bold;
+      border-radius: 6px;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
     }
 
     input[type=number] {
@@ -24,7 +30,8 @@
     }
     
     body { font-family: sans-serif; margin: 0; background: #fff; color: #111; }
-    header { background: #FFCC00; padding: 1rem; display: flex; align-items: center; gap: 1rem; }
+    header {
+      background: linear-gradient(to right, #ffcc00, #ffee88); padding: 1rem; display: flex; align-items: center; gap: 1rem; }
     header img { width: 50px; height: 50px; }
     .container {
   box-sizing: border-box;
@@ -41,13 +48,41 @@
       box-shadow: 0 1px 2px rgba(0,0,0,0.05);
       transition: box-shadow 0.2s ease-in-out;
     }
-    button { padding: 0.7rem 1rem; background: #111; color: #fff; border: none; margin-top: 1rem; width: 100%;  box-sizing: border-box; width: 100%;}
+    button { padding: 0.7rem 1rem; background: #111; color: #fff; border: none; margin-top: 1rem; width: 100%;  box-sizing: border-box; width: 100%;
+      background: linear-gradient(to right, #ffcc00, #ffee55);
+      color: #000;
+      font-weight: bold;
+      border-radius: 6px;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
     .output, .history { background: #f4f4f4; padding: 1rem; margin-top: 2rem; border-radius: 10px; }
     .red { color: tomato; } .green { color: green; }
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
     th, td { border: 1px solid #ccc; padding: 0.5rem; font-size: 0.9rem; }
-    .actions button { background: #FFCC00; color: #000; margin-top: 0;  box-sizing: border-box; width: 100%;}
-  </style>
+    .actions button { background: #FFCC00; color: #000; margin-top: 0;  box-sizing: border-box; width: 100%;
+      background: linear-gradient(to right, #ffcc00, #ffee55);
+      color: #000;
+      font-weight: bold;
+      border-radius: 6px;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+  
+    button:hover {
+      transform: scale(1.02);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+
+    .output {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .output.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    </style>
 </head>
 <body>
   <header>
@@ -55,34 +90,36 @@
     <h1>RB Taxi – Směna</h1>
   </header>
   <div class="container">
+  <div style="background:#fffbe6; padding: 1rem; border-radius: 10px; box-shadow: 0 0 4px rgba(0,0,0,0.1);">
     <form id="driverForm">
       <h2>Řidič a směna</h2>
-      <label>Jméno řidiče:
+      <label>👤 Jméno řidiče:
         <input type="text" id="driverName" placeholder="Zadej své jméno" required />
           <option value="Petr">Petr</option>
           <option value="Jana">Jana</option>
           <option value="Karel">Karel</option>
         </select>
       </label>
-      <label>Typ směny:
+      <label>🕘 Typ směny:
         <select id="shiftType">
           <option value="den">Denní</option>
           <option value="noc">Noční</option>
           <option value="1/2">1/2 směna</option>
         </select>
       </label>
-      <label>Celkem km: <input type="number" id="km" required /></label>
-      <label>Celková tržba (Kč): <input type="number" id="trzba" required /></label>
-      <label>Přístavné (Kč): <input type="number" id="pristavne" required /></label>
-      <label>Palivo (Kč): <input type="number" id="palivo" required /></label>
-      <label>Mytí (Kč): <input type="number" id="myti" required /></label>
-      <label>Kartou (Kč): <input type="number" id="karta" required /></label>
-      <label>Fakturou (Kč): <input type="number" id="faktura" required /></label>
-      <label>Jiné platby (Kč): <input type="number" id="jine" required /></label>
+      <label>🚗 Celkem km: <input type="number" id="km" required /></label>
+      <label>💵 Celková tržba (Kč): <input type="number" id="trzba" required /></label>
+      <label>🏁 Přístavné (Kč): <input type="number" id="pristavne" required /></label>
+      <label>⛽ Palivo (Kč): <input type="number" id="palivo" required /></label>
+      <label>🧼 Mytí (Kč): <input type="number" id="myti" required /></label>
+      <label>💳 Kartou (Kč): <input type="number" id="karta" required /></label>
+      <label>📄 Fakturou (Kč): <input type="number" id="faktura" required /></label>
+      <label>💬 Jiné platby (Kč): <input type="number" id="jine" required /></label>
       <button type="button" onclick="calculate()">💡 Spočítat a uložit</button>
     </form>
 
-    <div class="output" id="output"></div>
+    </div>
+<div class="output" id="output"></div>
 
     <div class="history">
       <h2>📋 Historie směn</h2>
@@ -184,8 +221,9 @@
         output += `<p class="red">⚠️ Tržba nepokrývá náklady – doplatek: ${doplatek.toFixed(2)} Kč</p>`;
       }
 
-      document.getElementById("output").innerHTML = output;
+      const out = document.getElementById("output"); out.innerHTML = output; out.classList.add("visible");
 
+      document.getElementById("output").classList.remove("visible");
       const shiftData = {
         date: dateStr,
         driver, shift, km,
