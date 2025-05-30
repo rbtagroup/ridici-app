@@ -1,6 +1,6 @@
 {
-  "name": "V\u00fdpo\u010det sm\u011bny \u0159idi\u010de",
-  "short_name": "\u0158idi\u010d App",
+  "name": "Výpočet směny řidiče",
+  "short_name": "Řidič App",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
