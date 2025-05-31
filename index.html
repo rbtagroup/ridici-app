@@ -145,10 +145,49 @@ img[src*='icon'], link[rel*='icon'] { background: transparent !important; }
         background-image: none !important;
         color: white !important;
     }
-    </style>
+    
+    header {
+        background: linear-gradient(90deg, #0d1b2a, #274472);
+        color: white !important;
+    }
+    
+header {
+    background: linear-gradient(90deg, #0d1b2a, #274472);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+header img {
+    height: 60px;
+    max-width: 220px;
+    margin-right: 12px;
+    object-fit: contain;
+}
+header span {
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Responzivní změna pro mobilní zařízení */
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    header img {
+        margin-bottom: 6px;
+        margin-right: 0;
+    }
+    header span {
+        font-size: 15px;
+    }
+}
+</style>
 </head>
 <body>
-<header style="background-color: #1a1a1a; padding: 10px; display: flex; align-items: center;"><img src="logo-header.png" style="height: 60px; max-width: 220px; margin-right: 12px; object-fit: contain;"/><span style="color: white; font-size: 16px; font-weight: 500;">RB Taxi – Směna</span></header>
+<header style="background: linear-gradient(90deg, #0d1b2a, #274472); padding: 10px; display: flex; align-items: center;"><img src="logo-header.png" style="height: 60px; max-width: 220px; margin-right: 12px; object-fit: contain;"/><span style="color: white; font-size: 16px; font-weight: 500;">RB Taxi – Směna</span></header>
 <div class="container">
 <div class="tabs">
 <div class="tab active" onclick="switchTab('form')">📝 Formulář</div>
@@ -217,6 +256,7 @@ function calculate() {
 
   const trzbaOK = trzba >= normaTrzba;
   const doplatek = Math.max(0, normaTrzba - trzba);
+  const prumerBarva = prumerNaKm <= 2.8 ? 'green' : 'red';
 
   const shiftData = {
     date: new Date().toISOString(),
@@ -251,9 +291,9 @@ function calculate() {
       <p><strong>Najeté km:</strong> ${km}</p>
       <p><strong>Tržba:</strong> ${trzba.toFixed(2)} Kč</p>
       ${trzbaInfo}
-      <p><strong>Průměr na km:</strong> ${prumerNaKm.toFixed(2)} Kč</p>
+      <p><strong>Průměr na km:</strong> <span style="color:${prumerBarva}; font-weight: bold">${prumerNaKm.toFixed(2)} Kč</span></p>
       <p><strong>Palivo:</strong> ${palivo.toFixed(2)} Kč</p>
-      <p><strong>Výplata řidiče:</strong> ${vyplata.toFixed(2)} Kč</p>
+      <p><strong>Výplata řidiče:</strong> <span style="font-weight: bold">${vyplata.toFixed(2)} Kč</span></p>
       <p><strong>K odevzdání:</strong> ${kOdevzdani.toFixed(2)} Kč</p>
       <button onclick="window.print()">🖨️ Vytisknout protokol</button>
     </div>
