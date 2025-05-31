@@ -1,10 +1,10 @@
 {
-  "name": "RB Taxi \u2013 V\u00fdpo\u010det sm\u011bny",
+  "name": "RB Taxi \u2013 Sm\u011bna",
   "short_name": "RB Taxi",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#FFCC00",
+  "background_color": "#FFF8DC",
+  "theme_color": "#FFD700",
   "icons": [
     {
       "src": "icons/icon-192x192.png",
