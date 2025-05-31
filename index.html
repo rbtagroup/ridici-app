@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <html lang="cs">
-<head><meta content="#FFD700" name="theme-color"/><meta content="RB Taxi" name="apple-mobile-web-app-title"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="yes" name="apple-mobile-web-app-capable"/><link href="icon-512x512.png" rel="apple-touch-icon"/><link href="favicon.ico" rel="icon" type="image/x-icon"/><meta content="#FFD700" name="theme-color"/><meta content="RB Taxi" name="apple-mobile-web-app-title"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="yes" name="apple-mobile-web-app-capable"/><link href="icons/icon-512x512.png" rel="apple-touch-icon"/>
+<head><link href="icon-512x512.png" rel="apple-touch-icon"/><link href="favicon.ico" rel="icon" type="image/x-icon"/><meta content="#FFD700" name="theme-color"/><meta content="RB Taxi" name="apple-mobile-web-app-title"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="yes" name="apple-mobile-web-app-capable"/><link href="icon-512x512.png" rel="apple-touch-icon"/><meta content="#FFD700" name="theme-color"/><meta content="RB Taxi" name="apple-mobile-web-app-title"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="yes" name="apple-mobile-web-app-capable"/><link href="icons/icon-512x512.png" rel="apple-touch-icon"/>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>RB Taxi – Výpočet směny</title>
@@ -184,10 +184,37 @@ header span {
         font-size: 15px;
     }
 }
-</style>
+
+    header {
+        background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 16px;
+    }
+    header img {
+        height: 50px;
+        object-fit: contain;
+    }
+    header span {
+        color: white;
+        font-size: 17px;
+        font-weight: 500;
+    }
+    @media (max-width: 600px) {
+        header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        header img {
+            margin-bottom: 6px;
+        }
+    }
+    </style>
 </head>
 <body>
-<header style="background: linear-gradient(90deg, #0d1b2a, #274472); padding: 10px; display: flex; align-items: center;"><img src="logo-header.png" style="height: 60px; max-width: 220px; margin-right: 12px; object-fit: contain;"/><span style="color: white; font-size: 16px; font-weight: 500;">RB Taxi – Směna</span></header>
+<header style="background: linear-gradient(90deg, #0d1b2a, #274472); padding: 10px; display: flex; align-items: center;"><img src="logo-header.png"/><span>RB Taxi – Směna</span></header>
 <div class="container">
 <div class="tabs">
 <div class="tab active" onclick="switchTab('form')">📝 Formulář</div>
