@@ -211,10 +211,43 @@ header span {
             margin-bottom: 6px;
         }
     }
+    
+header {
+    background: linear-gradient(to right, #0f2027, #1c3d5a, #4f6fa7);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+}
+header img {
+    height: 50px;
+    object-fit: contain;
+}
+header span {
+    color: white;
+    font-size: 17px;
+    font-weight: 500;
+    font-family: 'Segoe UI', sans-serif;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+}
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    header img {
+        margin-bottom: 6px;
+    }
+}
+
+    header {
+        background: linear-gradient(to right, #0f2027, #1c3d5a, #4f6fa7) !important;
+    }
     </style>
 </head>
 <body>
-<header style="background: linear-gradient(90deg, #0d1b2a, #274472); padding: 10px; display: flex; align-items: center;"><img src="logo-header.png"/><span>RB Taxi – Směna</span></header>
+<header style="background: linear-gradient(to right, #0f2027, #1c3d5a, #4f6fa7); padding: 12px 20px; display: flex; align-items: center; justify-content: flex-start; gap: 16px;"><img src="logo-header.png"/><span>RB Taxi – Směna</span></header>
 <div class="container">
 <div class="tabs">
 <div class="tab active" onclick="switchTab('form')">📝 Formulář</div>
@@ -311,47 +344,28 @@ function calculate() {
     ? '<p style="color:green;"><strong>Tržba vs norma:</strong> OK</p>'
     : `<p style="color:red;"><strong>Doplatek řidiče:</strong> ${doplatek.toFixed(2)} Kč</p>`;
 
+  
+  const trzbaInfo = trzbaOK
+    ? '<p style="color:green;"><strong>📉 Tržba vs norma:</strong> OK</p>'
+    : `<p style="color:red;"><strong>📉 Doplatek řidiče:</strong> ${doplatek.toFixed(2)} Kč<br/>
+        Tržba nedosáhla požadovaného minima (15 Kč/km).<br/>
+        Ujeto: ${km} km → Očekávaná tržba: ${normaTrzba.toFixed(2)} Kč<br/>
+        Skutečnost: ${trzba.toFixed(2)} Kč</p>`;
+
   const outputHTML = `
     <div id="printable">
-      <p><strong>Řidič:</strong> ${name}</p>
-      <p><strong>Směna:</strong> ${shift}</p>
-      <p><strong>Najeté km:</strong> ${km}</p>
-      <p><strong>Tržba:</strong> ${trzba.toFixed(2)} Kč</p>
+      <p><strong>👤 Řidič:</strong> ${name}</p>
+      <p><strong>🕘 Směna:</strong> ${shift}</p>
+      <p><strong>🚗 Najeté km:</strong> ${km}</p>
+      <p><strong>💵 Tržba:</strong> ${trzba.toFixed(2)} Kč</p>
       ${trzbaInfo}
-      <p><strong>Průměr na km:</strong> <span style="color:${prumerBarva}; font-weight: bold">${prumerNaKm.toFixed(2)} Kč</span></p>
-      <p><strong>Palivo:</strong> ${palivo.toFixed(2)} Kč</p>
-      <p><strong>Výplata řidiče:</strong> <span style="font-weight: bold">${vyplata.toFixed(2)} Kč</span></p>
-      <p><strong>K odevzdání:</strong> ${kOdevzdani.toFixed(2)} Kč</p>
+      <p><strong>📈 Průměr na km:</strong> <span style="color:${prumerBarva}; font-weight: bold">${prumerNaKm.toFixed(2)} Kč</span></p>
+      <p><strong>⛽ Palivo:</strong> ${palivo.toFixed(2)} Kč</p>
+      <p><strong>🧾 Výplata řidiče:</strong> <span style="font-weight: bold">${vyplata.toFixed(2)} Kč</span></p>
+      <p><strong>💰 K odevzdání:</strong> ${kOdevzdani.toFixed(2)} Kč</p>
       <button onclick="window.print()">🖨️ Vytisknout protokol</button>
     </div>
   `;
-  document.getElementById("output").innerHTML = outputHTML;
-  switchTab('vypocet');
-  document.getElementById("driverForm").reset();
-}
 
-function saveToHistory(data) {
-  const history = JSON.parse(localStorage.getItem("shifts") || "[]");
-  history.push(data);
-  localStorage.setItem("shifts", JSON.stringify(history));
-}
-
-function renderHistory() {
-  const history = JSON.parse(localStorage.getItem("shifts") || "[]");
-  const container = document.getElementById("historyTable");
-  if (!container) return;
-  if (history.length === 0) {
-    container.innerHTML = "<p>Žádná data</p>";
-    return;
-  }
-  let html = "<table><thead><tr><th>Datum</th><th>Řidič</th><th>Směna</th><th>Tržba</th><th>Km</th><th>Palivo</th></tr></thead><tbody>";
-  history.forEach(d => {
-    html += `<tr><td>${d.date.substring(0,16).replace('T',' ')}</td><td>${d.driver}</td><td>${d.shift}</td><td>${d.trzba} Kč</td><td>${d.km}</td><td>${d.palivo} Kč</td></tr>`;
-  });
-  html += "</tbody></table>";
-  container.innerHTML = html;
-}
-
-window.onload = renderHistory;
-</script></body>
+  document.getElementById("output").innerHTML = outputHTML;</script></body>
 </html>
