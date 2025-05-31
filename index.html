@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <html lang="cs">
-<head><meta content="#FFD700" name="theme-color"/><meta content="RB Taxi" name="apple-mobile-web-app-title"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="yes" name="apple-mobile-web-app-capable"/><link href="icons/icon-512x512.png" rel="apple-touch-icon"/><link href="favicon.ico" rel="icon" type="image/x-icon"/>
+<head><meta content="#FFD700" name="theme-color"/><meta content="RB Taxi" name="apple-mobile-web-app-title"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="yes" name="apple-mobile-web-app-capable"/><link href="icon-512x512.png" rel="apple-touch-icon"/><link href="favicon.ico" rel="icon" type="image/x-icon"/><meta content="#FFD700" name="theme-color"/><meta content="RB Taxi" name="apple-mobile-web-app-title"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="yes" name="apple-mobile-web-app-capable"/><link href="icons/icon-512x512.png" rel="apple-touch-icon"/>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>RB Taxi – Výpočet směny</title>
@@ -210,10 +210,12 @@ function calculate() {
   const vyplata = Math.max(1000, trzba * 0.3);
   const kOdevzdani = trzba - vyplata - palivo;
 
-  const prumernaCenaNaKm = 3.5; // referenční náklad na km v Kč
-  const nakladDleKm = km * prumernaCenaNaKm;
-  const rozdil = nakladDleKm - palivo;
-  const barva = rozdil > 0 ? 'green' : 'red';
+  // METRIKY
+  const trzbaNorma = km * 15;
+  const kmNaklad = palivo / (km || 1);  // aby nedošlo k dělení nulou
+
+  const trzbaHodnoceni = trzba >= trzbaNorma;
+  const normaHodnoceni = kmNaklad <= 2.8;
 
   const shiftData = {
     date: new Date().toISOString(),
@@ -229,7 +231,9 @@ function calculate() {
     jine,
     vyplata,
     kOdevzdani,
-    stav: rozdil > 0 ? "Řidič je v plusu" : "Řidič je v mínusu"
+    trzbaHodnoceni,
+    normaHodnoceni,
+    kmNaklad
   };
 
   saveToHistory(shiftData);
@@ -240,15 +244,11 @@ function calculate() {
       <p><strong>Směna:</strong> ${shift}</p>
       <p><strong>Najeté km:</strong> ${km}</p>
       <p><strong>Tržba:</strong> ${trzba.toFixed(2)} Kč</p>
-      <p><strong>Přístavné:</strong> ${pristavne.toFixed(2)} Kč</p>
+      <p class="${trzbaHodnoceni ? 'green' : 'red'}"><strong>Tržba vs norma (km × 15 Kč):</strong> ${trzba.toFixed(2)} Kč vs ${trzbaNorma.toFixed(2)} Kč</p>
+      <p class="${normaHodnoceni ? 'green' : 'red'}"><strong>Náklad na 1 km:</strong> ${kmNaklad.toFixed(2)} Kč (limit 2.8 Kč)</p>
       <p><strong>Palivo:</strong> ${palivo.toFixed(2)} Kč</p>
-      <p><strong>Mytí:</strong> ${myti.toFixed(2)} Kč</p>
-      <p><strong>Platby kartou:</strong> ${karta.toFixed(2)} Kč</p>
-      <p><strong>Faktura:</strong> ${faktura.toFixed(2)} Kč</p>
-      <p><strong>Jiné platby:</strong> ${jine.toFixed(2)} Kč</p>
       <p><strong>Výplata řidiče:</strong> ${vyplata.toFixed(2)} Kč</p>
       <p><strong>K odevzdání:</strong> ${kOdevzdani.toFixed(2)} Kč</p>
-      <p><strong class="${barva}">Stav dle km a tankování:</strong> <span class="${barva}">${shiftData.stav}</span></p>
       <button onclick="window.print()">🖨️ Vytisknout protokol</button>
     </div>
   `;
@@ -282,5 +282,20 @@ function renderHistory() {
 }
 
 window.onload = renderHistory;
+</script><script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    reg.onupdatefound = () => {
+      const installingWorker = reg.installing;
+      installingWorker.onstatechange = () => {
+        if (installingWorker.state === 'installed') {
+          if (navigator.serviceWorker.controller) {
+            alert("Byla nalezena nová verze aplikace. Obnovte stránku (CTRL+R nebo ⟳) pro aktualizaci.");
+          }
+        }
+      };
+    };
+  });
+}
 </script></body>
 </html>
