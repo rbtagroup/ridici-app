@@ -139,13 +139,16 @@
     }
 
 
-img[src*='icon'], link[rel*='icon'] { background: transparent !important; }</style>
+img[src*='icon'], link[rel*='icon'] { background: transparent !important; }
+    header {
+        background-color: #1a1a1a !important;
+        background-image: none !important;
+        color: white !important;
+    }
+    </style>
 </head>
 <body>
-<header>
-<img alt="Logo" src="logo.png"/>
-<h1>RB Taxi – Směna</h1>
-</header>
+<header style="background-color: #1a1a1a; padding: 10px; display: flex; align-items: center;"><img src="logo-header.png" style="height: 60px; max-width: 220px; margin-right: 12px; object-fit: contain;"/><span style="color: white; font-size: 16px; font-weight: 500;">RB Taxi – Směna</span></header>
 <div class="container">
 <div class="tabs">
 <div class="tab active" onclick="switchTab('form')">📝 Formulář</div>
@@ -209,13 +212,11 @@ function calculate() {
 
   const vyplata = Math.max(1000, trzba * 0.3);
   const kOdevzdani = trzba - vyplata - palivo;
+  const normaTrzba = km * 15;
+  const prumerNaKm = palivo / (km || 1);
 
-  // METRIKY
-  const trzbaNorma = km * 15;
-  const kmNaklad = palivo / (km || 1);  // aby nedošlo k dělení nulou
-
-  const trzbaHodnoceni = trzba >= trzbaNorma;
-  const normaHodnoceni = kmNaklad <= 2.8;
+  const trzbaOK = trzba >= normaTrzba;
+  const doplatek = Math.max(0, normaTrzba - trzba);
 
   const shiftData = {
     date: new Date().toISOString(),
@@ -231,27 +232,33 @@ function calculate() {
     jine,
     vyplata,
     kOdevzdani,
-    trzbaHodnoceni,
-    normaHodnoceni,
-    kmNaklad
+    prumerNaKm,
+    trzbaOK,
+    doplatek
   };
 
   saveToHistory(shiftData);
   renderHistory();
-  document.getElementById("output").innerHTML = `
+
+  const trzbaInfo = trzbaOK
+    ? '<p style="color:green;"><strong>Tržba vs norma:</strong> OK</p>'
+    : `<p style="color:red;"><strong>Doplatek řidiče:</strong> ${doplatek.toFixed(2)} Kč</p>`;
+
+  const outputHTML = `
     <div id="printable">
       <p><strong>Řidič:</strong> ${name}</p>
       <p><strong>Směna:</strong> ${shift}</p>
       <p><strong>Najeté km:</strong> ${km}</p>
       <p><strong>Tržba:</strong> ${trzba.toFixed(2)} Kč</p>
-      <p class="${trzbaHodnoceni ? 'green' : 'red'}"><strong>Tržba vs norma (km × 15 Kč):</strong> ${trzba.toFixed(2)} Kč vs ${trzbaNorma.toFixed(2)} Kč</p>
-      <p class="${normaHodnoceni ? 'green' : 'red'}"><strong>Náklad na 1 km:</strong> ${kmNaklad.toFixed(2)} Kč (limit 2.8 Kč)</p>
+      ${trzbaInfo}
+      <p><strong>Průměr na km:</strong> ${prumerNaKm.toFixed(2)} Kč</p>
       <p><strong>Palivo:</strong> ${palivo.toFixed(2)} Kč</p>
       <p><strong>Výplata řidiče:</strong> ${vyplata.toFixed(2)} Kč</p>
       <p><strong>K odevzdání:</strong> ${kOdevzdani.toFixed(2)} Kč</p>
       <button onclick="window.print()">🖨️ Vytisknout protokol</button>
     </div>
   `;
+  document.getElementById("output").innerHTML = outputHTML;
   switchTab('vypocet');
   document.getElementById("driverForm").reset();
 }
@@ -264,38 +271,20 @@ function saveToHistory(data) {
 
 function renderHistory() {
   const history = JSON.parse(localStorage.getItem("shifts") || "[]");
-  const tableContainer = document.getElementById("historyTable");
-  if (!tableContainer || history.length === 0) {
-    tableContainer.innerHTML = "<p>Žádná data</p>";
+  const container = document.getElementById("historyTable");
+  if (!container) return;
+  if (history.length === 0) {
+    container.innerHTML = "<p>Žádná data</p>";
     return;
   }
-  let table = "<table><thead><tr><th>Datum</th><th>Řidič</th><th>Směna</th><th>Km</th><th>Tržba</th><th>Palivo</th><th>Výplata</th><th>K odevzdání</th></tr></thead><tbody>";
-  history.forEach(row => {
-    table += `<tr>
-      <td>${row.date.replace('T', ' ').substring(0, 16)}</td><td>${row.driver}</td><td>${row.shift}</td>
-      <td>${row.km}</td><td>${row.trzba} Kč</td><td>${row.palivo} Kč</td>
-      <td>${row.vyplata} Kč</td><td>${row.kOdevzdani} Kč</td>
-    </tr>`;
+  let html = "<table><thead><tr><th>Datum</th><th>Řidič</th><th>Směna</th><th>Tržba</th><th>Km</th><th>Palivo</th></tr></thead><tbody>";
+  history.forEach(d => {
+    html += `<tr><td>${d.date.substring(0,16).replace('T',' ')}</td><td>${d.driver}</td><td>${d.shift}</td><td>${d.trzba} Kč</td><td>${d.km}</td><td>${d.palivo} Kč</td></tr>`;
   });
-  table += "</tbody></table>";
-  tableContainer.innerHTML = table;
+  html += "</tbody></table>";
+  container.innerHTML = html;
 }
 
 window.onload = renderHistory;
-</script><script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').then(reg => {
-    reg.onupdatefound = () => {
-      const installingWorker = reg.installing;
-      installingWorker.onstatechange = () => {
-        if (installingWorker.state === 'installed') {
-          if (navigator.serviceWorker.controller) {
-            alert("Byla nalezena nová verze aplikace. Obnovte stránku (CTRL+R nebo ⟳) pro aktualizaci.");
-          }
-        }
-      };
-    };
-  });
-}
 </script></body>
 </html>
