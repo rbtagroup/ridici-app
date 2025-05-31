@@ -138,7 +138,8 @@
       border-radius: 8px 8px 0 0;
     }
 
-</style>
+
+img[src*='icon'], link[rel*='icon'] { background: transparent !important; }</style>
 </head>
 <body>
 <header>
@@ -209,6 +210,11 @@ function calculate() {
   const vyplata = Math.max(1000, trzba * 0.3);
   const kOdevzdani = trzba - vyplata - palivo;
 
+  const prumernaCenaNaKm = 3.5; // referenční náklad na km v Kč
+  const nakladDleKm = km * prumernaCenaNaKm;
+  const rozdil = nakladDleKm - palivo;
+  const barva = rozdil > 0 ? 'green' : 'red';
+
   const shiftData = {
     date: new Date().toISOString(),
     driver: name,
@@ -222,34 +228,32 @@ function calculate() {
     faktura,
     jine,
     vyplata,
-    kOdevzdani
+    kOdevzdani,
+    stav: rozdil > 0 ? "Řidič je v plusu" : "Řidič je v mínusu"
   };
 
   saveToHistory(shiftData);
   renderHistory();
-  document.getElementById("output").innerHTML = formatOutput(shiftData);
-  switchTab('vypocet');
-  window.print();  // automaticky tisk po výpočtu
-  document.getElementById("driverForm").reset();
-}
-
-function formatOutput(data) {
-  return `
+  document.getElementById("output").innerHTML = `
     <div id="printable">
-    <p><strong>Řidič:</strong> ${data.driver}</p>
-    <p><strong>Směna:</strong> ${data.shift}</p>
-    <p><strong>Najeté km:</strong> ${data.km}</p>
-    <p><strong>Tržba:</strong> ${data.trzba.toFixed(2)} Kč</p>
-    <p><strong>Přístavné:</strong> ${data.pristavne.toFixed(2)} Kč</p>
-    <p><strong>Palivo:</strong> ${data.palivo.toFixed(2)} Kč</p>
-    <p><strong>Mytí:</strong> ${data.myti.toFixed(2)} Kč</p>
-    <p><strong>Platby kartou:</strong> ${data.karta.toFixed(2)} Kč</p>
-    <p><strong>Faktura:</strong> ${data.faktura.toFixed(2)} Kč</p>
-    <p><strong>Jiné platby:</strong> ${data.jine.toFixed(2)} Kč</p>
-    <p><strong>Výplata řidiče:</strong> ${data.vyplata.toFixed(2)} Kč</p>
-    <p><strong>K odevzdání:</strong> ${data.kOdevzdani.toFixed(2)} Kč</p>
+      <p><strong>Řidič:</strong> ${name}</p>
+      <p><strong>Směna:</strong> ${shift}</p>
+      <p><strong>Najeté km:</strong> ${km}</p>
+      <p><strong>Tržba:</strong> ${trzba.toFixed(2)} Kč</p>
+      <p><strong>Přístavné:</strong> ${pristavne.toFixed(2)} Kč</p>
+      <p><strong>Palivo:</strong> ${palivo.toFixed(2)} Kč</p>
+      <p><strong>Mytí:</strong> ${myti.toFixed(2)} Kč</p>
+      <p><strong>Platby kartou:</strong> ${karta.toFixed(2)} Kč</p>
+      <p><strong>Faktura:</strong> ${faktura.toFixed(2)} Kč</p>
+      <p><strong>Jiné platby:</strong> ${jine.toFixed(2)} Kč</p>
+      <p><strong>Výplata řidiče:</strong> ${vyplata.toFixed(2)} Kč</p>
+      <p><strong>K odevzdání:</strong> ${kOdevzdani.toFixed(2)} Kč</p>
+      <p><strong class="${barva}">Stav dle km a tankování:</strong> <span class="${barva}">${shiftData.stav}</span></p>
+      <button onclick="window.print()">🖨️ Vytisknout protokol</button>
     </div>
   `;
+  switchTab('vypocet');
+  document.getElementById("driverForm").reset();
 }
 
 function saveToHistory(data) {
@@ -260,70 +264,21 @@ function saveToHistory(data) {
 
 function renderHistory() {
   const history = JSON.parse(localStorage.getItem("shifts") || "[]");
-  const dateFilter = document.getElementById("dateFilter")?.value || "";
-  const nameFilter = document.getElementById("nameFilter")?.value.toLowerCase() || "";
   const tableContainer = document.getElementById("historyTable");
-  if (!tableContainer) return;
-
-  if (history.length === 0) {
+  if (!tableContainer || history.length === 0) {
     tableContainer.innerHTML = "<p>Žádná data</p>";
     return;
   }
-
-  const filtered = history.filter(row => {
-    const matchDate = !dateFilter || row.date.startsWith(dateFilter);
-    const matchName = !nameFilter || row.driver.toLowerCase().includes(nameFilter);
-    return matchDate && matchName;
-  });
-
-  let totalTrzba = 0, totalVyplata = 0, totalKOdevzdani = 0;
   let table = "<table><thead><tr><th>Datum</th><th>Řidič</th><th>Směna</th><th>Km</th><th>Tržba</th><th>Palivo</th><th>Výplata</th><th>K odevzdání</th></tr></thead><tbody>";
-  filtered.forEach(row => {
-    totalTrzba += row.trzba;
-    totalVyplata += row.vyplata;
-    totalKOdevzdani += row.kOdevzdani;
+  history.forEach(row => {
     table += `<tr>
       <td>${row.date.replace('T', ' ').substring(0, 16)}</td><td>${row.driver}</td><td>${row.shift}</td>
       <td>${row.km}</td><td>${row.trzba} Kč</td><td>${row.palivo} Kč</td>
       <td>${row.vyplata} Kč</td><td>${row.kOdevzdani} Kč</td>
     </tr>`;
   });
-  table += `</tbody><tfoot><tr><th colspan="4">Celkem</th><th>${totalTrzba.toFixed(2)} Kč</th><th></th><th>${totalVyplata.toFixed(2)} Kč</th><th>${totalKOdevzdani.toFixed(2)} Kč</th></tr></tfoot></table>`;
+  table += "</tbody></table>";
   tableContainer.innerHTML = table;
-}
-
-function clearMyHistory() {
-  localStorage.removeItem("shifts");
-  renderHistory();
-}
-
-function downloadCSV() {
-  const history = JSON.parse(localStorage.getItem("shifts") || "[]");
-  const dateFilter = document.getElementById("dateFilter")?.value || "";
-  const nameFilter = document.getElementById("nameFilter")?.value.toLowerCase() || "";
-  const filtered = history.filter(row => {
-    const matchDate = !dateFilter || row.date.startsWith(dateFilter);
-    const matchName = !nameFilter || row.driver.toLowerCase().includes(nameFilter);
-    return matchDate && matchName;
-  });
-
-  if (filtered.length === 0) {
-    alert("Žádná data k exportu.");
-    return;
-  }
-
-  const header = Object.keys(filtered[0]).join(",");
-  const rows = filtered.map(entry => Object.values(entry).join(","));
-  const csvContent = [header, ...rows].join("\n");
-
-  const now = new Date();
-  const filename = `smeny_${now.toISOString().slice(0,10)}.csv`;
-
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const link = document.createElement("a");
-  link.setAttribute("href", URL.createObjectURL(blob));
-  link.setAttribute("download", filename);
-  link.click();
 }
 
 window.onload = renderHistory;
